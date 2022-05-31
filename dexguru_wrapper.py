@@ -106,7 +106,7 @@ class dexguru:
 
             raw_object = self.get_prices(self.pairs_df[i][0][0],self.pairs_df[i][0][1],start,end)
 
-            if type(raw_object) != type(None):        
+            if raw_object is not None:        
                 raw_data = raw_object.loc[:,["price_usd","timestamp","volume24h_usd"]]
                 raw_data.timestamp = pd.to_datetime(raw_data.timestamp,unit='s')
                 raw_data.timestamp = raw_data.timestamp.dt.round("d")                
@@ -116,12 +116,11 @@ class dexguru:
                 start_vol = raw_data.volume24h_usd.loc[raw_data.volume24h_usd !=0].index
                 if len(start_vol) > 0:
                     raw_data = raw_data.loc[start_vol[0]:]            
-
                 self.aggregated_data = pd.concat([self.aggregated_data,pd.Series(raw_data["price_usd"]).rename(i)],axis=1)                   
             else:
                 print("Probably empty: ",i)
-
-            self.aggregated_data = self.aggregated_data.fillna(method="ffill")    
+                
+        self.aggregated_data = self.aggregated_data.fillna(method="ffill")    
         return self.aggregated_data
     
     
